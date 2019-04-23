@@ -1,5 +1,7 @@
 import processing.core.PApplet;
 
+import java.io.IOException;
+
 public class Run extends PApplet {
     private static final int WIDTH = 1500;
     private static final int HEIGHT = 1000;
@@ -19,9 +21,17 @@ public class Run extends PApplet {
     }
 
     public static void main(String[] args){
-        String[] processingArgs = {"Run"};
-        Run runClass = new Run();
-        PApplet.runSketch(processingArgs, runClass);
+        double[][] grid = new double[0][0];
+        try {
+            grid = CSVReader.get2DData("CS4102 2019 P2 data/mesh.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        CSVReader.printGrid(grid);
+
+//        String[] processingArgs = {"Run"};
+//        Run runClass = new Run();
+//        PApplet.runSketch(processingArgs, runClass);
     }
 
     public static Run getInstance() {
