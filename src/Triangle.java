@@ -28,7 +28,7 @@ public class Triangle implements Comparable<Triangle> {
         this.p3 = p3;
     }
 
-    public Triangle addVals(PVector p1, PVector p2, PVector p3, Color c1, Color c2, Color c3) {
+    public Triangle addVals(PVector p1, PVector p2, PVector p3, Weightable c1, Weightable c2, Weightable c3) {
         Triangle copy = this.copy();
         copy.p1.add(p1);
         copy.p2.add(p2);
@@ -78,8 +78,22 @@ public class Triangle implements Comparable<Triangle> {
 
     public void draw(PApplet pApplet) {
         pApplet.stroke(100);
-//        pApplet.noFill();
+        pApplet.noFill();
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+    }
+
+    public void drawWeights(PApplet pApplet) {
+        System.out.println(c1);
+        pApplet.fill(0);
+        pApplet.text(c1.toString() + "", p1.x, p1.y);
+        pApplet.text(c2.toString() + "", p2.x, p2.y);
+        pApplet.text(c3.toString() + "", p3.x, p3.y);
+
+        if (pApplet.mousePressed) {
+            System.out.println("Pressed");
+            PVector mousePos = new PVector(pApplet.mouseX, pApplet.mouseY);
+            pApplet.text(getPointWeight(mousePos, c1.w1, c2.w2, c3.w3) + "", pApplet.mouseX, pApplet.mouseY);
+        }
     }
 
     @Override
@@ -93,12 +107,11 @@ public class Triangle implements Comparable<Triangle> {
             return 0;
     }
 
-    private double getPointWeight(PVector point, double w1, double w2, double w3) {
+    private Weightable getPointWeight(PVector point, double w1, double w2, double w3) {
         double[] bWeights = getBaryWeights(point);
-        double resultWeight = (bWeights[0] * w1 + bWeights[1] * w2 + bWeights[2] * w3) /
-                            (bWeights[0] + bWeights[1] + bWeights[2]);
+        Weightable result = new Weightable(bWeights[0] * w1, bWeights[1] * w2, bWeights[2] * w3);
 
-        return resultWeight;
+        return result.div(bWeights[0] + bWeights[1] + bWeights[2]);
     }
 
     private double[] getBaryWeights(PVector point) {
@@ -117,7 +130,8 @@ public class Triangle implements Comparable<Triangle> {
         PVector p1 = new PVector(-1, 1);
         PVector p2 = new PVector(1, 1);
         PVector p3 = new PVector(0, -1);
-        Triangle triangle = new Triangle(p1, p2, p3);
+        Triangle triangle = new Triangle(p1, p2, p3, new Weightable(10,0, 0), new Weightable(0, 10, 0),
+                new Weightable(0, 0, 10));
         triangle.scale(scaleVal);
         triangle.moveBy(new PVector(screenWidth / 2.0f, screenHeight / 2.0f));
 

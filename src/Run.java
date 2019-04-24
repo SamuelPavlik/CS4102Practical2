@@ -21,8 +21,8 @@ public class Run extends PApplet {
                     "CS4102 2019 P2 data/tx_001.csv");
 
             face.reverse();
-            face.scale(0.004f);
-            face.moveBy(new PVector(WIDTH / 2, HEIGHT / 2));
+            face.scale(0.003f);
+            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
 
 //            triangle = Triangle.triangleInCentre(WIDTH, HEIGHT, 200);
         } catch (Exception e) {
@@ -41,8 +41,7 @@ public class Run extends PApplet {
 
         face.draw(this);
 //        triangle.draw(this);
-
-        noLoop();
+//        triangle.drawWeights(this);
     }
 
     public static void main(String[] args){
