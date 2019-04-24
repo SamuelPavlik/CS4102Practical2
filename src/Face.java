@@ -27,7 +27,6 @@ public class Face {
     public Face(Face avgFace, int[][] mesh, String shFile, String txFile, double shWeight, double txWeight) throws IOException {
         List<Triangle> avgTriangles = avgFace.getTriangles();
         triangles = new ArrayList<>();
-        Set<Triangle> tr = new TreeSet<>();
         double[][] shDeltaGrid = CSVReader.get2DDataDouble(shFile);
         double[][] txDeltaGrid = CSVReader.get2DDataDouble(txFile);
 
