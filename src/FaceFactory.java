@@ -2,9 +2,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class FaceFactory {
-    private static final double SH_MULT = 3;
-    private static final double TX_MULT = 5;
-
     private Face avgFace;
     private int[][] mesh;
     private double[] shEV;
@@ -35,6 +32,8 @@ public class FaceFactory {
     }
 
     public void addFace(String shFile, String txFile) {
+        double shWeight = getFileWeight(shFile, shEV) * SH_MULT;
+        double txWeight = getFileWeight(txFile, txEV) * TX_MULT;
 
     }
 
@@ -54,11 +53,5 @@ public class FaceFactory {
 //        Face face3 = new Face(face2, mesh, shFile3, txFile3, shWeight3, txWeight3);
 
         return face3;
-    }
-
-    private double getFileWeight(String file, double[] ev) {
-        String indexText = file.split("_")[1].split(".csv")[0];
-        int index = Integer.parseInt(indexText);
-        return ev[index - 1];
     }
 }
