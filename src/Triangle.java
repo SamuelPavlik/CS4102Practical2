@@ -98,7 +98,7 @@ public class Triangle implements Comparable<Triangle> {
 
     public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef) {
         Weightable avgColor = getAverageColor();
-        PVector normal = getNormal();
+        PVector normal = getNormal().normalize();
         double toMult = lightVector.dot(normal) * lightInt * diffCoef;
 
         return avgColor.mult(toMult);
