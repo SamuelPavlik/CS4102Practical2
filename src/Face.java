@@ -144,11 +144,7 @@ public class Face {
 
     public void draw(PApplet pApplet) {
         for (Triangle tr : triangles) {
-            Weightable color = tr.getLambertianColor(new PVector(0, 0, 1).normalize(), 3, 0.3);
-//            Weightable color = tr.getAverageColor();
-            pApplet.fill(((float) color.w1), ((float) color.w2), ((float) color.w3));
-            pApplet.stroke(((float) color.w1), ((float) color.w2), ((float) color.w3));
-            pApplet.triangle(tr.p1.x, tr.p1.y, tr.p2.x, tr.p2.y, tr.p3.x, tr.p3.y);
+            tr.drawFlat(pApplet, new PVector(0, 0, 1), 3, 0.3);
         }
     }
 

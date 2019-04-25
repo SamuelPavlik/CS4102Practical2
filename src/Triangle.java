@@ -85,8 +85,8 @@ public class Triangle implements Comparable<Triangle> {
     }
 
     public PVector getNormal() {
-        PVector v1 = p2.copy().add(p1.mult(-1));
-        PVector v2 = p3.copy().add(p1.mult(-1));
+        PVector v1 = p2.copy().add(p1.copy().mult(-1));
+        PVector v2 = p3.copy().add(p1.copy().mult(-1));
         PVector normal = v1.cross(v2);
 
         return normal.normalize();
@@ -98,16 +98,49 @@ public class Triangle implements Comparable<Triangle> {
 
     public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef) {
         Weightable avgColor = getAverageColor();
-        PVector normal = getNormal().normalize();
-        double toMult = lightVector.dot(normal) * lightInt * diffCoef;
+        PVector normal = getNormal();
+        double toMult = lightVector.normalize().dot(normal) * lightInt * diffCoef;
 
         return avgColor.mult(toMult);
+    }
+
+    public Weightable[] getLambertianColorGrad(PVector lightVector, double lightInt, double diffCoef) {
+        Weightable color1 = c1.copy();
+        Weightable color2 = c2.copy();
+        Weightable color3 = c3.copy();
+        PVector normal = getNormal();
+        double toMult = lightVector.normalize().dot(normal) * lightInt * diffCoef;
+
+        return new Weightable[]{color1.mult(toMult), color2.mult(toMult), color3.mult(toMult)};
     }
 
     public void draw(PApplet pApplet) {
         pApplet.stroke(100);
         pApplet.noFill();
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+    }
+
+    public void drawFlat(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
+        Weightable color = getLambertianColor(lightVector, lightInt, diffCoef);
+        pApplet.fill(((float) color.w1), ((float) color.w2), ((float) color.w3));
+        pApplet.stroke(((float) color.w1), ((float) color.w2), ((float) color.w3));
+        pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+    }
+
+    public void drawGrad(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
+        Weightable[] cs = getLambertianColorGrad(lightVector, lightInt, diffCoef);
+
+        pApplet.beginShape();
+        pApplet.stroke(((float) cs[0].w1), ((float) cs[0].w2), ((float) cs[0].w3));
+        pApplet.fill(((float) cs[0].w1), ((float) cs[0].w2), ((float) cs[0].w3));
+        pApplet.vertex(p1.x, p1.y);
+        pApplet.stroke(((float) cs[1].w1), ((float) cs[1].w2), ((float) cs[1].w3));
+        pApplet.fill(((float) cs[1].w1), ((float) cs[1].w2), ((float) cs[1].w3));
+        pApplet.vertex(p2.x, p2.y);
+        pApplet.stroke(((float) cs[2].w1), ((float) cs[2].w2), ((float) cs[2].w3));
+        pApplet.fill(((float) cs[2].w1), ((float) cs[2].w2), ((float) cs[2].w3));
+        pApplet.vertex(p3.x, p3.y);
+        pApplet.endShape();
     }
 
     public void drawWeights(PApplet pApplet) {

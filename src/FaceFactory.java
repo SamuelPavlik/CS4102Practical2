@@ -31,13 +31,6 @@ public class FaceFactory {
         return array;
     }
 
-//    public Face createFace(String shFile, String txFile) throws IOException {
-//        double shWeight = getFileWeight(shFile, shEV) * SH_MULT;
-//        double txWeight = getFileWeight(txFile, txEV) * TX_MULT;
-//
-//        return new Face(avgFace, mesh, shFile, txFile, shWeight, txWeight);
-//    }
-
     public void addFace(String shFile, String txFile) throws IOException {
         double shWeight = getFileWeight(shFile, shEV) * SH_MULT;
         double txWeight = getFileWeight(txFile, txEV) * TX_MULT;
