@@ -11,6 +11,7 @@ public class Triangle implements Comparable<Triangle> {
     public Weightable c2;
     public Weightable c3;
     public PVector centrePoint;
+    public Weightable avgColor;
 
     public Triangle(PVector p1, PVector p2, PVector p3, Weightable c1, Weightable c2, Weightable c3) {
         this.p1 = p1;
@@ -83,8 +84,24 @@ public class Triangle implements Comparable<Triangle> {
         return this;
     }
 
+    public PVector getNormal() {
+        PVector v1 = p2.copy().add(p1.mult(-1));
+        PVector v2 = p3.copy().add(p1.mult(-1));
+        PVector normal = v1.cross(v2);
+
+        return normal.normalize();
+    }
+
     public Weightable getAverageColor() {
         return c1.copy().add(c2).add(c3).mult(0.3333);
+    }
+
+    public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef) {
+        Weightable avgColor = getAverageColor();
+        PVector normal = getNormal();
+        double toMult = lightVector.dot(normal) * lightInt * diffCoef;
+
+        return avgColor.mult(toMult);
     }
 
     public void draw(PApplet pApplet) {

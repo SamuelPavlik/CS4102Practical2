@@ -29,24 +29,11 @@ public class Run extends PApplet {
                     "CS4102 2019 P2 data/tx_003.csv");
 
             posWeigths = new Weightable(0.4, 0.3, 0.3);
-            try {
-//                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
-//                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
-//                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
-//                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
-                face = faceFactory.createSyntheticFace(new Weightable(0.4, 0.3, 0.3), new Weightable(0.4, 0.3, 0.3));
-                face.reverse();
-                face.scale(0.001f);
-                face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-//            face = faceFactory.createFace("CS4102 2019 P2 data/sh_015.csv",
-//                    "CS4102 2019 P2 data/tx_001.csv");
 
-//            face.reverse();
-//            face.scale(0.003f);
-//            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            face = faceFactory.createSyntheticFace(new Weightable(0.4, 0.3, 0.3), new Weightable(0.4, 0.3, 0.3));
+            face.reverse();
+            face.scale(0.001f);
+            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,22 +51,21 @@ public class Run extends PApplet {
         //Get weights
         triangle.draw(this);
         face.draw(this);
-
+        System.out.println("Drawn");
+        noLoop();
     }
 
     @Override
     public void mousePressed() {
+//        System.out.println();
         Weightable weightable = triangle.onMouseClick(this);
         if (weightable != posWeigths) {
             posWeigths = weightable;
-            try {
-                face = faceFactory.createSyntheticFace(posWeigths, posWeigths);
-                face.reverse();
-                face.scale(0.001f);
-                face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            face = faceFactory.createSyntheticFace(posWeigths, posWeigths);
+            face.reverse();
+            face.scale(0.001f);
+            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            redraw();
         }
     }
 
