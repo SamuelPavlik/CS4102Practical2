@@ -107,7 +107,31 @@ public class Triangle implements Comparable<Triangle> {
             return 0;
     }
 
-    private Weightable getPointWeight(PVector point, double w1, double w2, double w3) {
+    private float sign (PVector p1, PVector p2, PVector p3)
+    {
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    }
+
+    public boolean PointInTriangle (PVector pt)
+    {
+        float d1, d2, d3;
+        boolean has_neg, has_pos;
+
+        d1 = sign(pt, p1, p2);
+        d2 = sign(pt, p2, p3);
+        d3 = sign(pt, p3, p1);
+
+        has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+        return !(has_neg && has_pos);
+    }
+
+    public Weightable getPointWeight(PVector point, Weightable w1, Weightable w2, Weightable w3) {
+        return getPointWeight(point, w1.w1, w2.w2, w3.w3);
+    }
+
+    public Weightable getPointWeight(PVector point, double w1, double w2, double w3) {
         double[] bWeights = getBaryWeights(point);
         Weightable result = new Weightable(bWeights[0] * w1, bWeights[1] * w2, bWeights[2] * w3);
 

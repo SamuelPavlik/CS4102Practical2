@@ -9,23 +9,37 @@ public class Run extends PApplet {
     private static Run instance = null;
     FaceFactory faceFactory;
     Face face;
-    Triangle triangle;
+    ClickTriangle triangle;
+    Weightable posWeigths;
 
     public void setup() {
         try {
+            triangle = new ClickTriangle(WIDTH, HEIGHT, 200);
+
             faceFactory = new FaceFactory("CS4102 2019 P2 data/mesh.csv",
                     "CS4102 2019 P2 data/sh_000.csv",
                     "CS4102 2019 P2 data/tx_000.csv",
                     "CS4102 2019 P2 data/sh_ev.csv",
                     "CS4102 2019 P2 data/tx_ev.csv");
+
+            posWeigths = new Weightable(0.4, 0.3, 0.3);
+            try {
+                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
+                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
+                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
+                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
+                face.reverse();
+                face.scale(0.001f);
+                face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 //            face = faceFactory.createFace("CS4102 2019 P2 data/sh_015.csv",
 //                    "CS4102 2019 P2 data/tx_001.csv");
 
 //            face.reverse();
 //            face.scale(0.003f);
 //            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-
-//            triangle = Triangle.triangleInCentre(WIDTH, HEIGHT, 200);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,22 +54,37 @@ public class Run extends PApplet {
         //Draw scene
         background(255) ;
 
-        try {
-            face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_015.csv",
-                    "CS4102 2019 P2 data/tx_015.csv", "CS4102 2019 P2 data/sh_010.csv",
-                    "CS4102 2019 P2 data/tx_010.csv", "CS4102 2019 P2 data/sh_020.csv",
-                    "CS4102 2019 P2 data/tx_020.csv", new Weightable(1, 0, 0), new Weightable(1, 0, 0));
+        //Get weights
+        triangle.draw(this);
 
-            face.reverse();
-            face.scale(0.003f);
-            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-        } catch (IOException e) {
+        try {
+            face.draw(this);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
 //        face.draw(this);
-//        triangle.draw(this);
-//        triangle.drawWeights(this);
+
+//        noLoop();
+    }
+
+    @Override
+    public void mousePressed() {
+        Weightable weightable = triangle.onMouseClick(this);
+        if (weightable != posWeigths) {
+            posWeigths = weightable;
+            try {
+                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
+                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
+                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
+                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
+                face.reverse();
+                face.scale(0.001f);
+                face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String[] args){

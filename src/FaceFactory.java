@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.List;
 
 public class FaceFactory {
     private static final double SH_MULT = 3;
@@ -8,6 +9,7 @@ public class FaceFactory {
     private int[][] mesh;
     private double[] shEV;
     private double[] txEV;
+    private List<FaceData> faces;
 
     public FaceFactory(String meshFile, String avgShadeFile, String avgTextFile, String shEVFile, String txEVFile) throws IOException {
         this.shEV = get1DArray(CSVReader.get2DDataDouble(shEVFile));
@@ -32,6 +34,10 @@ public class FaceFactory {
         return new Face(avgFace, mesh, shFile, txFile, shWeight, txWeight);
     }
 
+    public void addFace(String shFile, String txFile) {
+
+    }
+
     public Face createSyntheticFace(String shFile1, String txFile1, String shFile2, String txFile2, String shFile3,
                                     String txFile3, Weightable shWeights, Weightable txWeights) throws IOException {
         double shWeight1 = (getFileWeight(shFile1, shEV) * SH_MULT) * shWeights.w1;
@@ -41,9 +47,11 @@ public class FaceFactory {
         double shWeight3 = (getFileWeight(shFile3, shEV) * SH_MULT) * shWeights.w3;
         double txWeight3 = getFileWeight(txFile3, txEV) * TX_MULT * txWeights.w3;
 
-        Face face1 = new Face(avgFace, mesh, shFile1, txFile1, shWeight1, txWeight1);
-        Face face2 = new Face(face1, mesh, shFile2, txFile2, shWeight2, txWeight2);
-        Face face3 = new Face(face2, mesh, shFile3, txFile3, shWeight3, txWeight3);
+        Face face3 = new Face(avgFace, mesh, shFile1, txFile1, shWeight1, txWeight1, shFile2, txFile2, shWeight2,
+                txWeight2, shFile3, txFile3, shWeight3, txWeight3);
+//        Face face1 = new Face(avgFace, mesh, shFile1, txFile1, shWeight1, txWeight1);
+//        Face face2 = new Face(face1, mesh, shFile2, txFile2, shWeight2, txWeight2);
+//        Face face3 = new Face(face2, mesh, shFile3, txFile3, shWeight3, txWeight3);
 
         return face3;
     }

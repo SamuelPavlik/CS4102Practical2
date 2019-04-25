@@ -47,6 +47,43 @@ public class Face {
         triangles.sort(null);
     }
 
+    public Face(Face avgFace, int[][] mesh, String shFile1, String txFile1, double shWeight1, double txWeight1
+            , String shFile2, String txFile2, double shWeight2, double txWeight2
+            , String shFile3, String txFile3, double shWeight3, double txWeight3) throws IOException {
+        List<Triangle> avgTriangles = avgFace.getTriangles();
+        triangles = new ArrayList<>();
+        double[][] shDeltaGrid1 = CSVReader.get2DDataDouble(shFile1);
+        double[][] txDeltaGrid1 = CSVReader.get2DDataDouble(txFile1);
+        double[][] shDeltaGrid2 = CSVReader.get2DDataDouble(shFile2);
+        double[][] txDeltaGrid2 = CSVReader.get2DDataDouble(txFile2);
+        double[][] shDeltaGrid3 = CSVReader.get2DDataDouble(shFile3);
+        double[][] txDeltaGrid3 = CSVReader.get2DDataDouble(txFile3);
+
+        for (int i = 0; i < mesh.length; i++) {
+            PVector[] points = new PVector[3];
+            Weightable[] colors = new Weightable[3];
+            for (int col = 0; col < mesh[0].length; col++) {
+                int row = mesh[i][col] - 1;
+                points[col] = new PVector(((float) shDeltaGrid1[row][0]), ((float) shDeltaGrid1[row][1]), ((float) shDeltaGrid1[row][2]));
+                points[col] = points[col].mult((float) shWeight1);
+                colors[col] = new Weightable(txDeltaGrid1[row][0], txDeltaGrid1[row][1], txDeltaGrid1[row][2]);
+                colors[col] = colors[col].mult(txWeight1);
+
+                points[col].add(new PVector(((float) shDeltaGrid2[row][0]), ((float) shDeltaGrid2[row][1]),
+                        ((float) shDeltaGrid2[row][2])).mult((float) shWeight2));
+                colors[col].add(new Weightable(txDeltaGrid2[row][0], txDeltaGrid2[row][1], txDeltaGrid2[row][2]).mult(txWeight2));
+
+                points[col].add(new PVector(((float) shDeltaGrid3[row][0]), ((float) shDeltaGrid3[row][1]),
+                        ((float) shDeltaGrid3[row][2])).mult((float) shWeight3));
+                colors[col].add(new Weightable(txDeltaGrid3[row][0], txDeltaGrid3[row][1], txDeltaGrid3[row][2]).mult(txWeight3));
+            }
+            Triangle newTriangle = avgTriangles.get(i).addVals(points[0], points[1], points[2], colors[0], colors[1],
+                    colors[2]);
+            triangles.add(newTriangle);
+        }
+        triangles.sort(null);
+    }
+
     public void scale(float val) {
         for (Triangle t : triangles) {
             t.scale(val);
