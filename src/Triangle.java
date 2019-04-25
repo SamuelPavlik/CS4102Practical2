@@ -40,6 +40,17 @@ public class Triangle implements Comparable<Triangle> {
         return copy;
     }
 
+    public Triangle add(Triangle other, double shWeightNorm, double txWeightNorm) {
+        p1.add(other.p1.copy().mult((float) shWeightNorm));
+        p2.add(other.p2.copy().mult((float) shWeightNorm));
+        p3.add(other.p3.copy().mult((float) shWeightNorm));
+        c1.add(other.c1.copy().mult((float) txWeightNorm));
+        c2.add(other.c2.copy().mult((float) txWeightNorm));
+        c3.add(other.c3.copy().mult((float) txWeightNorm));
+
+        return this;
+    }
+
     public Triangle copy() {
         return new Triangle(p1.copy(), p2.copy(), p3.copy(), c1.copy(), c2.copy(), c3.copy());
     }

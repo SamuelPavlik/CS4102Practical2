@@ -21,17 +21,24 @@ public class Run extends PApplet {
                     "CS4102 2019 P2 data/tx_000.csv",
                     "CS4102 2019 P2 data/sh_ev.csv",
                     "CS4102 2019 P2 data/tx_ev.csv");
+            faceFactory.addFace("CS4102 2019 P2 data/sh_001.csv",
+                    "CS4102 2019 P2 data/tx_001.csv");
+            faceFactory.addFace("CS4102 2019 P2 data/sh_002.csv",
+                    "CS4102 2019 P2 data/tx_002.csv");
+            faceFactory.addFace("CS4102 2019 P2 data/sh_003.csv",
+                    "CS4102 2019 P2 data/tx_003.csv");
 
             posWeigths = new Weightable(0.4, 0.3, 0.3);
             try {
-                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
-                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
-                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
-                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
+//                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
+//                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
+//                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
+//                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
+                face = faceFactory.createSyntheticFace(new Weightable(0.4, 0.3, 0.3), new Weightable(0.4, 0.3, 0.3));
                 face.reverse();
                 face.scale(0.001f);
                 face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 //            face = faceFactory.createFace("CS4102 2019 P2 data/sh_015.csv",
@@ -56,16 +63,8 @@ public class Run extends PApplet {
 
         //Get weights
         triangle.draw(this);
+        face.draw(this);
 
-        try {
-            face.draw(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        face.draw(this);
-
-//        noLoop();
     }
 
     @Override
@@ -74,14 +73,11 @@ public class Run extends PApplet {
         if (weightable != posWeigths) {
             posWeigths = weightable;
             try {
-                face = faceFactory.createSyntheticFace("CS4102 2019 P2 data/sh_001.csv",
-                        "CS4102 2019 P2 data/tx_001.csv", "CS4102 2019 P2 data/sh_002.csv",
-                        "CS4102 2019 P2 data/tx_002.csv", "CS4102 2019 P2 data/sh_003.csv",
-                        "CS4102 2019 P2 data/tx_003.csv", posWeigths, posWeigths);
+                face = faceFactory.createSyntheticFace(posWeigths, posWeigths);
                 face.reverse();
                 face.scale(0.001f);
                 face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
