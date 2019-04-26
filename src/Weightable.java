@@ -1,3 +1,6 @@
+/**
+ * Object representing RGB color or weights of triangle's vertex
+ */
 public class Weightable {
     public double w1;
     public double w2;
@@ -9,6 +12,11 @@ public class Weightable {
         this.w3 = w3;
     }
 
+    /**
+     * Add fields of other Weightable object to this Weightable
+     * @param weightable other Weightable object
+     * @return this Weightable object with added fields
+     */
     public Weightable add(Weightable weightable) {
         this.w1 += weightable.w1;
         this.w2 += weightable.w2;
@@ -17,6 +25,11 @@ public class Weightable {
         return this;
     }
 
+    /**
+     * Multiply fields by scalar
+     * @param scalar scalar to multiply by
+     * @return this Weightable object with multiplied fields
+     */
     public Weightable mult(double scalar) {
         this.w1 *= scalar;
         this.w2 *= scalar;
@@ -25,6 +38,10 @@ public class Weightable {
         return this;
     }
 
+    /**
+     * @param scalar
+     * @return this Weightable with fields divided by scalar
+     */
     public Weightable div(double scalar) {
         this.w1 /= scalar;
         this.w2 /= scalar;
@@ -33,6 +50,9 @@ public class Weightable {
         return this;
     }
 
+    /**
+     * @return copy of this Weightable
+     */
     public Weightable copy() {
         return new Weightable(this.w1, this.w2, this.w3);
     }

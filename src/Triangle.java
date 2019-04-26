@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Object to store triangle vertices and weights or colors assigned to those vertices
+ */
 public class Triangle implements Comparable<Triangle> {
     public PVector p1;
     public PVector p2;
@@ -121,7 +124,7 @@ public class Triangle implements Comparable<Triangle> {
      * @param lightVector vector of incoming light
      * @param lightInt light intensity
      * @param diffCoef diffuse coefficient
-     * @return
+     * @return average color of polygon using Lambert's illumination model
      */
     public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef) {
         Weightable avgColor = getAverageColor();
@@ -135,7 +138,7 @@ public class Triangle implements Comparable<Triangle> {
      * @param lightVector vector of incoming light
      * @param lightInt light intensity
      * @param diffCoef diffuse coefficient
-     * @return
+     * @return color of point using Lambert's illumination model
      */
     public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef, Weightable color) {
         PVector normal = getNormal();
@@ -145,6 +148,15 @@ public class Triangle implements Comparable<Triangle> {
     }
 
 
+    /**
+     * Calculates colors for all three vertices of triangle using Lambert's illumination model. The normals for
+     * the points are calculated by adding normals of each triangle the point is part of.
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     * @param normMap map of points to triangles it is part of
+     * @return colors for all three vertices of triangle using Lambert's illumination model
+     */
     public Weightable[] getLambertianColorGrad(PVector lightVector, double lightInt, double diffCoef,
                                                HashMap<PVector, PVector> normMap) {
         Weightable color1 = c1.copy();
@@ -157,12 +169,23 @@ public class Triangle implements Comparable<Triangle> {
         return new Weightable[]{color1.mult(toMult1), color2.mult(toMult2), color3.mult(toMult3)};
     }
 
+    /**
+     * Draw this triangle
+     * @param pApplet PApplet to draw into
+     */
     public void draw(PApplet pApplet) {
         pApplet.stroke(100);
         pApplet.noFill();
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
     }
 
+    /**
+     * Draw this triangle using flat shading and Lambert's illumination model
+     * @param pApplet PApplet to draw into
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     */
     public void drawFlat(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
         Weightable color = getLambertianColor(lightVector, lightInt, diffCoef);
         pApplet.fill(((float) color.w1), ((float) color.w2), ((float) color.w3));
@@ -170,6 +193,14 @@ public class Triangle implements Comparable<Triangle> {
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
     }
 
+    /**
+     * Draw this triangle using gradient shading and Lambert's illumination model. Each vertex has normal identical to
+     * the triangle's normal and colors are interpolated between the triangle's vertices.
+     * @param pApplet PApplet to draw into
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     */
     public void drawGradPart(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
         Weightable[] cs = {getLambertianColor(lightVector, lightInt, diffCoef, c1),
                 getLambertianColor(lightVector, lightInt, diffCoef, c2),
@@ -188,6 +219,16 @@ public class Triangle implements Comparable<Triangle> {
         pApplet.endShape();
     }
 
+    /**
+     * Draw this triangle using gradient shading and Lambert's illumination model. Each vertex has normal calculated
+     * by adding normals of all triangles the vertex is part of and colors are interpolated between the triangle's
+     * vertices.
+     * @param pApplet PApplet to draw into
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     * @param normMap maps a vertex to normal calculated by adding normals of all triangles the vertex is part of
+     */
     public void drawGrad(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef, HashMap<PVector, PVector> normMap) {
         Weightable[] cs = getLambertianColorGrad(lightVector, lightInt, diffCoef, normMap);
 
@@ -204,6 +245,10 @@ public class Triangle implements Comparable<Triangle> {
         pApplet.endShape();
     }
 
+    /**
+     * Draw the clickable triangle's weights
+     * @param pApplet PApplet to draw into
+     */
     public void drawWeights(PApplet pApplet) {
         System.out.println(c1);
         pApplet.fill(0);
@@ -229,12 +274,25 @@ public class Triangle implements Comparable<Triangle> {
             return 0;
     }
 
+    /**
+     * source: https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+     * Calculate sign of a triangle
+     * @param p1 vertex 1
+     * @param p2 vertex 2
+     * @param p3 vertex 2
+     * @return sign of triangle
+     */
     private float sign (PVector p1, PVector p2, PVector p3)
     {
         return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
     }
 
-    public boolean PointInTriangle (PVector pt)
+    /**
+     * source: https://stackoverflow.com/questions/2049582/how-to-determine-if-a-point-is-in-a-2d-triangle
+     * @param pt PVector of position to determine
+     * @return true if point inside triangle, false otherwise
+     */
+    public boolean isInTriangle(PVector pt)
     {
         float d1, d2, d3;
         boolean has_neg, has_pos;
@@ -249,10 +307,14 @@ public class Triangle implements Comparable<Triangle> {
         return !(has_neg && has_pos);
     }
 
-    public Weightable getPointWeight(PVector point, Weightable w1, Weightable w2, Weightable w3) {
-        return getPointWeight(point, w1.w1, w2.w2, w3.w3);
-    }
-
+    /**
+     * Calculate weights of a point in triangle using Barycentric coordinates
+     * @param point calculate weights of this PVector point
+     * @param w1 weight at vertex 1
+     * @param w2 weight at vertex 2
+     * @param w3 weight at vertex 3
+     * @return barycentric weights of given point based on weights of the triangle's vertices
+     */
     public Weightable getPointWeight(PVector point, double w1, double w2, double w3) {
         double[] bWeights = getBaryWeights(point);
         Weightable result = new Weightable(bWeights[0] * w1, bWeights[1] * w2, bWeights[2] * w3);
@@ -260,6 +322,11 @@ public class Triangle implements Comparable<Triangle> {
         return result.div(bWeights[0] + bWeights[1] + bWeights[2]);
     }
 
+    /**
+     * Calculate normalized weights of a point in triangle using Barycentric coordinates
+     * @param point calculate weights of this PVector point
+     * @return normalized barycentric weights of given point based on weights of the triangle's vertices
+     */
     private double[] getBaryWeights(PVector point) {
         double w1 = ((p2.y - p3.y)*(point.x - p3.x) + (p3.x - p2.x)*(point.y - p3.y)) /
                 ((p2.y - p3.y)*(p1.x - p3.x) + (p3.x - p2.x)*(p1.y - p3.y));
@@ -272,6 +339,13 @@ public class Triangle implements Comparable<Triangle> {
         return new double[]{w1, w2, w3};
     }
 
+    /**
+     * Generate triangle in centre of screen
+     * @param screenWidth screen width
+     * @param screenHeight screen height
+     * @param scaleVal size of triangle
+     * @return generated triangle
+     */
     public static Triangle triangleInCentre(int screenWidth, int screenHeight, float scaleVal) {
         PVector p1 = new PVector(-1, 1);
         PVector p2 = new PVector(1, 1);
@@ -284,6 +358,11 @@ public class Triangle implements Comparable<Triangle> {
         return triangle;
     }
 
+    /**
+     * Calculate normalized normal of a vertex by adding normals of each triangle passed in
+     * @param triangles triangles to calculate the normal from
+     * @return normalized normal of the vertex
+     */
     public static PVector getTotalNormal(Set<Triangle> triangles) {
         PVector total = new PVector(0,0,0);
         for (Triangle t : triangles) {

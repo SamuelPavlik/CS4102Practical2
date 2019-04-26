@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CSVReader {
+    /**
+     * Read CSV file into 2D array of doubles
+     * @param fileName path to file
+     * @return 2D array of doubles
+     * @throws IOException
+     */
     public static double[][] get2DDataDouble(String fileName) throws IOException {
 
         BufferedReader CSVFile = new BufferedReader(new FileReader(fileName));
@@ -26,6 +32,12 @@ public class CSVReader {
         return grid;
     }
 
+    /**
+     * Read CSV file into 2D array of integers
+     * @param fileName path to file
+     * @return 2D array of integers
+     * @throws IOException
+     */
     public static int[][] get2DDataInteger(String fileName) throws IOException {
         BufferedReader CSVFile = new BufferedReader(new FileReader(fileName));
         String dataRow = CSVFile.readLine();
@@ -46,6 +58,10 @@ public class CSVReader {
     }
 
 
+    /**
+     * Print 2D array
+     * @param grid 2D array
+     */
     public static void printGrid(double[][] grid) {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[0].length; j++) {
@@ -55,6 +71,10 @@ public class CSVReader {
         }
     }
 
+    /**
+     * @param line String line of numbers to convert into doubles
+     * @return 1D array of doubles
+     */
     private static double[] convertToDoubles(String line) {
         String[] cols = line.split(",");
         double[] vals = new double[cols.length];
@@ -70,6 +90,10 @@ public class CSVReader {
         return vals;
     }
 
+    /**
+     * @param line String line of numbers to convert into integers
+     * @return 1D array of integers
+     */
     private static int[] convertToIntegers(String line) {
         String[] cols = line.split(",");
         int[] vals = new int[cols.length];
