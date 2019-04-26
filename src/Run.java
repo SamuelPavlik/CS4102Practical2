@@ -3,6 +3,7 @@ import processing.core.PVector;
 import processing.opengl.PGraphics2D;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Run extends PApplet {
     private static final int WIDTH = 1500;
@@ -35,6 +36,7 @@ public class Run extends PApplet {
             face.reverse();
             face.scale(0.003f);
             face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            face.recalc();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,11 +51,11 @@ public class Run extends PApplet {
         //Draw scene
         background(255) ;
 
-////        Get weights
-//        triangle.draw(this);
-//        face.draw(this);
-//        System.out.println("Drawn");
-//        noLoop();
+//        Get weights
+        triangle.draw(this);
+        face.draw(this);
+        System.out.println("Drawn");
+        noLoop();
 
 //        background(100);
 //        beginShape();
@@ -76,6 +78,7 @@ public class Run extends PApplet {
             face.reverse();
             face.scale(0.003f);
             face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            face.recalc();
             redraw();
         }
     }

@@ -1,6 +1,10 @@
 import processing.core.PApplet;
 import processing.core.PVector;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 public class Triangle implements Comparable<Triangle> {
     private static final float NORMALIZER = 0.05f;
 
@@ -104,14 +108,16 @@ public class Triangle implements Comparable<Triangle> {
         return avgColor.mult(toMult);
     }
 
-    public Weightable[] getLambertianColorGrad(PVector lightVector, double lightInt, double diffCoef) {
+    public Weightable[] getLambertianColorGrad(PVector lightVector, double lightInt, double diffCoef,
+                                               HashMap<PVector, PVector> normMap) {
         Weightable color1 = c1.copy();
         Weightable color2 = c2.copy();
         Weightable color3 = c3.copy();
-        PVector normal = getNormal();
-        double toMult = lightVector.normalize().dot(normal) * lightInt * diffCoef;
+        double toMult1 = lightVector.normalize().dot(normMap.get(p1)) * lightInt * diffCoef;
+        double toMult2 = lightVector.normalize().dot(normMap.get(p2)) * lightInt * diffCoef;
+        double toMult3 = lightVector.normalize().dot(normMap.get(p3)) * lightInt * diffCoef;
 
-        return new Weightable[]{color1.mult(toMult), color2.mult(toMult), color3.mult(toMult)};
+        return new Weightable[]{color1.mult(toMult1), color2.mult(toMult2), color3.mult(toMult3)};
     }
 
     public void draw(PApplet pApplet) {
@@ -127,8 +133,8 @@ public class Triangle implements Comparable<Triangle> {
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
     }
 
-    public void drawGrad(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
-        Weightable[] cs = getLambertianColorGrad(lightVector, lightInt, diffCoef);
+    public void drawGrad(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef, HashMap<PVector, PVector> normMap) {
+        Weightable[] cs = getLambertianColorGrad(lightVector, lightInt, diffCoef, normMap);
 
         pApplet.beginShape();
         pApplet.stroke(((float) cs[0].w1), ((float) cs[0].w2), ((float) cs[0].w3));
@@ -221,5 +227,14 @@ public class Triangle implements Comparable<Triangle> {
         triangle.moveBy(new PVector(screenWidth / 2.0f, screenHeight / 2.0f));
 
         return triangle;
+    }
+
+    public static PVector getTotalNormal(Set<Triangle> triangles) {
+        PVector total = new PVector(0,0,0);
+        for (Triangle t : triangles) {
+            total.add(t.getNormal());
+        }
+
+        return total.normalize();
     }
 }

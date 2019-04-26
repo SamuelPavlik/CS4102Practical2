@@ -38,24 +38,6 @@ public class FaceFactory {
         this.faces.add(new Face(mesh, shFile, txFile, shWeight, txWeight));
     }
 
-//    public Face createSyntheticFace(String shFile1, String txFile1, String shFile2, String txFile2, String shFile3,
-//                                    String txFile3, Weightable shWeights, Weightable txWeights) throws IOException {
-//        double shWeight1 = (getFileWeight(shFile1, shEV) * SH_MULT) * shWeights.w1;
-//        double txWeight1 = getFileWeight(txFile1, txEV) * TX_MULT * txWeights.w1;
-//        double shWeight2 = (getFileWeight(shFile2, shEV) * SH_MULT) * shWeights.w2;
-//        double txWeight2 = getFileWeight(txFile2, txEV) * TX_MULT * txWeights.w2;
-//        double shWeight3 = (getFileWeight(shFile3, shEV) * SH_MULT) * shWeights.w3;
-//        double txWeight3 = getFileWeight(txFile3, txEV) * TX_MULT * txWeights.w3;
-//
-//        Face face3 = new Face(avgFace, mesh, shFile1, txFile1, shWeight1, txWeight1, shFile2, txFile2, shWeight2,
-//                txWeight2, shFile3, txFile3, shWeight3, txWeight3);
-//        Face face1 = new Face(avgFace, mesh, shFile1, txFile1, shWeight1, txWeight1);
-//        Face face2 = new Face(face1, mesh, shFile2, txFile2, shWeight2, txWeight2);
-//        Face face3 = new Face(face2, mesh, shFile3, txFile3, shWeight3, txWeight3);
-//
-//        return face3;
-//    }
-
     public Face createSyntheticFace(Weightable shWeights, Weightable txWeights) {
         Face syntFace = avgFace.copy();
         syntFace.add(faces.get(0), shWeights.w1, txWeights.w1);
