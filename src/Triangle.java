@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Triangle implements Comparable<Triangle> {
-    private static final float NORMALIZER = 0.05f;
-
     public PVector p1;
     public PVector p2;
     public PVector p3;
@@ -15,7 +13,6 @@ public class Triangle implements Comparable<Triangle> {
     public Weightable c2;
     public Weightable c3;
     public PVector centrePoint;
-    public Weightable avgColor;
 
     public Triangle(PVector p1, PVector p2, PVector p3, Weightable c1, Weightable c2, Weightable c3) {
         this.p1 = p1;
@@ -33,18 +30,13 @@ public class Triangle implements Comparable<Triangle> {
         this.p3 = p3;
     }
 
-    public Triangle addVals(PVector p1, PVector p2, PVector p3, Weightable c1, Weightable c2, Weightable c3) {
-        Triangle copy = this.copy();
-        copy.p1.add(p1);
-        copy.p2.add(p2);
-        copy.p3.add(p3);
-        copy.c1.add(c1);
-        copy.c2.add(c2);
-        copy.c3.add(c3);
-
-        return copy;
-    }
-
+    /**
+     * Add points and colors of another triangle to this triangle
+     * @param other other triangle
+     * @param shWeightNorm weight of shading normalised between 0 and 1
+     * @param txWeightNorm weight of texture normalised between 0 and 1
+     * @return this triangle with after the addition
+     */
     public Triangle add(Triangle other, double shWeightNorm, double txWeightNorm) {
         p1.add(other.p1.copy().mult((float) shWeightNorm));
         p2.add(other.p2.copy().mult((float) shWeightNorm));
@@ -56,14 +48,25 @@ public class Triangle implements Comparable<Triangle> {
         return this;
     }
 
+    /**
+     * @return generated copy of this triangle, with all its field copied as well
+     */
     public Triangle copy() {
         return new Triangle(p1.copy(), p2.copy(), p3.copy(), c1.copy(), c2.copy(), c3.copy());
     }
 
+    /**
+     * @return centre point of this triangle
+     */
     public PVector getCentre() {
         return (p1.copy().add(p2).add(p3)).mult(0.3333f);
     }
 
+    /**
+     * Multiply each point of this triangle by given value
+     * @param val value to multiply by
+     * @return scaled triangle
+     */
     public Triangle scale(float val) {
         p1.mult(val);
         p2.mult(val);
@@ -72,6 +75,11 @@ public class Triangle implements Comparable<Triangle> {
         return this;
     }
 
+    /**
+     * Move this triangle by given vector
+     * @param vector vector to the triangle by
+     * @return moved triangle
+     */
     public Triangle moveBy(PVector vector) {
         p1.add(vector);
         p2.add(vector);
@@ -80,6 +88,9 @@ public class Triangle implements Comparable<Triangle> {
         return this;
     }
 
+    /**
+     * @return this triangle with reversed y coordinate of each point
+     */
     public Triangle reverse() {
         p1.y = -p1.y;
         p2.y = -p2.y;
@@ -88,6 +99,9 @@ public class Triangle implements Comparable<Triangle> {
         return this;
     }
 
+    /**
+     * @return normal vector of this triangle
+     */
     public PVector getNormal() {
         PVector v1 = p2.copy().add(p1.copy().mult(-1));
         PVector v2 = p3.copy().add(p1.copy().mult(-1));
@@ -96,17 +110,40 @@ public class Triangle implements Comparable<Triangle> {
         return normal.normalize();
     }
 
+    /**
+     * @return average color of this triangle based on its vertices
+     */
     public Weightable getAverageColor() {
         return c1.copy().add(c2).add(c3).mult(0.3333);
     }
 
+    /**
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     * @return
+     */
     public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef) {
         Weightable avgColor = getAverageColor();
+//        PVector normal = getNormal();
+//        double toMult = lightVector.normalize().dot(normal) * lightInt * diffCoef;
+
+        return getLambertianColor(lightVector, lightInt, diffCoef, avgColor);
+    }
+
+    /**
+     * @param lightVector vector of incoming light
+     * @param lightInt light intensity
+     * @param diffCoef diffuse coefficient
+     * @return
+     */
+    public Weightable getLambertianColor(PVector lightVector, double lightInt, double diffCoef, Weightable color) {
         PVector normal = getNormal();
         double toMult = lightVector.normalize().dot(normal) * lightInt * diffCoef;
 
-        return avgColor.mult(toMult);
+        return color.mult(toMult);
     }
+
 
     public Weightable[] getLambertianColorGrad(PVector lightVector, double lightInt, double diffCoef,
                                                HashMap<PVector, PVector> normMap) {
@@ -131,6 +168,24 @@ public class Triangle implements Comparable<Triangle> {
         pApplet.fill(((float) color.w1), ((float) color.w2), ((float) color.w3));
         pApplet.stroke(((float) color.w1), ((float) color.w2), ((float) color.w3));
         pApplet.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+    }
+
+    public void drawGradPart(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef) {
+        Weightable[] cs = {getLambertianColor(lightVector, lightInt, diffCoef, c1),
+                getLambertianColor(lightVector, lightInt, diffCoef, c2),
+                getLambertianColor(lightVector, lightInt, diffCoef, c3)};
+
+        pApplet.beginShape();
+        pApplet.stroke(((float) cs[0].w1), ((float) cs[0].w2), ((float) cs[0].w3));
+        pApplet.fill(((float) cs[0].w1), ((float) cs[0].w2), ((float) cs[0].w3));
+        pApplet.vertex(p1.x, p1.y);
+        pApplet.stroke(((float) cs[1].w1), ((float) cs[1].w2), ((float) cs[1].w3));
+        pApplet.fill(((float) cs[1].w1), ((float) cs[1].w2), ((float) cs[1].w3));
+        pApplet.vertex(p2.x, p2.y);
+        pApplet.stroke(((float) cs[2].w1), ((float) cs[2].w2), ((float) cs[2].w3));
+        pApplet.fill(((float) cs[2].w1), ((float) cs[2].w2), ((float) cs[2].w3));
+        pApplet.vertex(p3.x, p3.y);
+        pApplet.endShape();
     }
 
     public void drawGrad(PApplet pApplet, PVector lightVector, double lightInt, double diffCoef, HashMap<PVector, PVector> normMap) {

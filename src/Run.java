@@ -8,39 +8,49 @@ import java.util.HashMap;
 public class Run extends PApplet {
     private static final int WIDTH = 1500;
     private static final int HEIGHT = 1000;
-    private static Run instance = null;
-    FaceFactory faceFactory;
-    Face face;
-    ClickTriangle triangle;
-    Weightable posWeigths;
+
+    private static final String SOURCE = "CS4102 2019 P2 data/";
+
+    private static final String MESH_FILE = SOURCE + "mesh.csv";
+    private static final String AVG_FACE_SH_FILE = SOURCE + "sh_000.csv";
+    private static final String AVG_FACE_TX_FILE = SOURCE + "tx_000.csv";
+    private static final String SH_EV_FILE = SOURCE + "sh_ev.csv";
+    private static final String TX_EV_FILE = SOURCE + "tx_ev.csv";
+
+    private static final String FACE1_SH_FILE = SOURCE + "sh_001.csv";
+    private static final String FACE1_TX_FILE = SOURCE + "tx_001.csv";
+    private static final String FACE2_SH_FILE = SOURCE + "sh_002.csv";
+    private static final String FACE2_TX_FILE = SOURCE + "tx_002.csv";
+    private static final String FACE3_SH_FILE = SOURCE + "sh_003.csv";
+    private static final String FACE3_TX_FILE = SOURCE + "tx_003.csv";
+
+    private static final Weightable START_POS_WEIGHTS = new Weightable(0.333, 0.333, 0.333);
+    private static final float FACE_SCALE = 0.003f;
+    private static final float WIDTH_TO_TRIAN_RATE = 3.0f;
+    private static final PVector TO_CENTRE_VECTOR = new PVector(WIDTH / 2.0f, HEIGHT / 2.0f);
+
+    private FaceFactory faceFactory;
+    private Face face;
+    private ClickTriangle triangle;
 
     public void setup() {
         try {
-            triangle = new ClickTriangle(WIDTH, HEIGHT, 400);
+            triangle = new ClickTriangle(WIDTH, HEIGHT, WIDTH / WIDTH_TO_TRIAN_RATE);
 
-            faceFactory = new FaceFactory("/media/samuel/OS/CS4102 2019 P2 data/mesh.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/sh_000.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/tx_000.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/sh_ev.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/tx_ev.csv");
-            faceFactory.addFace("/media/samuel/OS/CS4102 2019 P2 data/sh_001.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/tx_001.csv");
-            faceFactory.addFace("/media/samuel/OS/CS4102 2019 P2 data/sh_002.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/tx_002.csv");
-            faceFactory.addFace("/media/samuel/OS/CS4102 2019 P2 data/sh_003.csv",
-                    "/media/samuel/OS/CS4102 2019 P2 data/tx_003.csv");
+            faceFactory = new FaceFactory(MESH_FILE, AVG_FACE_SH_FILE, AVG_FACE_TX_FILE, SH_EV_FILE, TX_EV_FILE);
+            faceFactory.addFace(FACE1_SH_FILE, FACE1_TX_FILE);
+            faceFactory.addFace(FACE2_SH_FILE, FACE2_TX_FILE);
+            faceFactory.addFace(FACE3_SH_FILE, FACE3_TX_FILE);
 
-            posWeigths = new Weightable(0.4, 0.3, 0.3);
-
-            face = faceFactory.createSyntheticFace(new Weightable(0.4, 0.3, 0.3), new Weightable(0.4, 0.3, 0.3));
+            face = faceFactory.createSyntheticFace(START_POS_WEIGHTS, START_POS_WEIGHTS);
             face.reverse();
-            face.scale(0.003f);
-            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
+            face.scale(FACE_SCALE);
+            face.moveBy(TO_CENTRE_VECTOR);
             face.recalc();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        instance = this;
+        noLoop();
     }
 
     public void settings(){
@@ -51,47 +61,29 @@ public class Run extends PApplet {
         //Draw scene
         background(255) ;
 
-//        Get weights
+        //Draw the clickable triangle
         triangle.draw(this);
-        face.draw(this);
-        System.out.println("Drawn");
-        noLoop();
 
-//        background(100);
-//        beginShape();
-//        fill(255, 0, 0);
-//        vertex(200,20);
-//        fill(0, 255, 0);
-//        vertex(20,380);
-//        fill(0, 0, 255);
-//        vertex(380,380);
-//        endShape();
+        //Draw the face
+        face.draw(this);
+
+        System.out.println("Drawn");
     }
 
     @Override
     public void mousePressed() {
-//        System.out.println();
         Weightable weightable = triangle.onMouseClick(this);
-        if (weightable != posWeigths) {
-            posWeigths = weightable;
-            face = faceFactory.createSyntheticFace(posWeigths, posWeigths);
-            face.reverse();
-            face.scale(0.003f);
-            face.moveBy(new PVector(WIDTH / 2.0f, HEIGHT / 2.0f));
-            face.recalc();
-            redraw();
-        }
+        face = faceFactory.createSyntheticFace(weightable, weightable);
+        face.reverse();
+        face.scale(FACE_SCALE);
+        face.moveBy(TO_CENTRE_VECTOR);
+        face.recalc();
+        redraw();
     }
 
     public static void main(String[] args){
         String[] processingArgs = {"Run"};
         Run runClass = new Run();
         PApplet.runSketch(processingArgs, runClass);
-    }
-
-    public static Run getInstance() {
-        if (instance == null)
-            instance = new Run();
-        return instance;
     }
 }

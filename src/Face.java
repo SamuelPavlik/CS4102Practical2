@@ -12,6 +12,7 @@ public class Face {
     private double txWeight = NO_WEIGHT;
     private HashMap<PVector, Set<Triangle>> pointsToTriangles = new HashMap<>();
     private HashMap<PVector, PVector> normMap;
+    private List<PVector> indexedPoints = new ArrayList<>();
 
     public Face(double shWeight, double txWeight) {
         triangles = new ArrayList<>();
@@ -23,6 +24,7 @@ public class Face {
         triangles = new ArrayList<>();
         double[][] shGrid = CSVReader.get2DDataDouble(shFile);
         double[][] txGrid = CSVReader.get2DDataDouble(txFile);
+        HashSet<PVector> pointSet = new HashSet<>();
 
         for (int i = 0; i < mesh.length; i++) {
             PVector[] points = new PVector[3];
@@ -34,7 +36,17 @@ public class Face {
             }
             Triangle tr = new Triangle(points[0], points[1], points[2], colors[0], colors[1], colors[2]);
             triangles.add(tr);
+
+//            pointSet.add(points[0]);
+//            pointSet.add(points[1]);
+//            pointSet.add(points[2]);
+//
+//            addToTriangles(points[0], tr);
+//            addToTriangles(points[1], tr);
+//            addToTriangles(points[2], tr);
         }
+
+        indexedPoints = new ArrayList<>(pointSet);
     }
 
     public Face(int[][] mesh, String shFile, String txFile, double shWeight, double txWeight) throws IOException {
@@ -97,6 +109,7 @@ public class Face {
     public void draw(PApplet pApplet) {
         for (Triangle tr : triangles) {
             tr.drawGrad(pApplet, new PVector(0, 0, 1), 3, 0.3, normMap);
+//            tr.drawGradPart(pApplet, new PVector(0, 0, 1), 3, 0.3);
 //            tr.drawFlat(pApplet, new PVector(0, 0, 1), 3, 0.3);
         }
     }
