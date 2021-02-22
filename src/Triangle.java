@@ -346,14 +346,14 @@ public class Triangle implements Comparable<Triangle> {
      * @param scaleVal size of triangle
      * @return generated triangle
      */
-    public static Triangle triangleInCentre(int screenWidth, int screenHeight, float scaleVal) {
+    public static Triangle triangleOnScreen(int screenWidth, int screenHeight, float scaleVal) {
         PVector p1 = new PVector(-1, 1);
         PVector p2 = new PVector(1, 1);
         PVector p3 = new PVector(0, -1);
         Triangle triangle = new Triangle(p1, p2, p3, new Weightable(10,0, 0), new Weightable(0, 10, 0),
                 new Weightable(0, 0, 10));
         triangle.scale(scaleVal);
-        triangle.moveBy(new PVector(screenWidth / 2.0f, screenHeight / 2.0f));
+        triangle.moveBy(new PVector(screenWidth / 2.0f - scaleVal + 100, screenHeight / 2.0f));
 
         return triangle;
     }

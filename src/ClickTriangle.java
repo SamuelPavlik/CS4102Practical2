@@ -12,12 +12,14 @@ public class ClickTriangle {
     private Weightable lastPosWeight;
     private FaceFactory faceFactory;
     private PVector clickedPos;
+    private boolean displayFaces;
 
-    public ClickTriangle(int screenWidth, int screenHeight, float scaleVal, FaceFactory faceFactory) {
-        this.triangle = Triangle.triangleInCentre(screenWidth, screenHeight, scaleVal);
+    public ClickTriangle(int screenWidth, int screenHeight, float scaleVal, FaceFactory faceFactory, boolean displayFaces) {
+        this.triangle = Triangle.triangleOnScreen(screenWidth, screenHeight, scaleVal);
         this.lastPosWeight = new Weightable(0.4, 0.3, 0.3);
         this.faceFactory = faceFactory;
         this.clickedPos = triangle.getCentre();
+        this.displayFaces = displayFaces;
     }
 
     /**
@@ -27,26 +29,28 @@ public class ClickTriangle {
     public void draw(PApplet pApplet) {
         triangle.draw(pApplet);
 
-        Face face1 = faceFactory.createSyntheticFace(new Weightable(1, 0, 0), new Weightable(1, 0, 0));
-        face1.reverse();
-        face1.scale(0.001f);
-        face1.moveBy(triangle.p1);
-        face1.recalc();
-        face1.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
+        if (displayFaces) {
+            Face face1 = faceFactory.createSyntheticFace(new Weightable(1, 0, 0), new Weightable(1, 0, 0));
+            face1.reverse();
+            face1.scale(0.001f);
+            face1.moveBy(triangle.p1);
+            face1.recalc();
+            face1.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
 
-        Face face2 = faceFactory.createSyntheticFace(new Weightable(0, 1, 0), new Weightable(0, 1, 0));
-        face2.reverse();
-        face2.scale(0.001f);
-        face2.moveBy(triangle.p2);
-        face2.recalc();
-        face2.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
+            Face face2 = faceFactory.createSyntheticFace(new Weightable(0, 1, 0), new Weightable(0, 1, 0));
+            face2.reverse();
+            face2.scale(0.001f);
+            face2.moveBy(triangle.p2);
+            face2.recalc();
+            face2.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
 
-        Face face3 = faceFactory.createSyntheticFace(new Weightable(0, 0, 1), new Weightable(0, 0, 1));
-        face3.reverse();
-        face3.scale(0.001f);
-        face3.moveBy(triangle.p3);
-        face3.recalc();
-        face3.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
+            Face face3 = faceFactory.createSyntheticFace(new Weightable(0, 0, 1), new Weightable(0, 0, 1));
+            face3.reverse();
+            face3.scale(0.001f);
+            face3.moveBy(triangle.p3);
+            face3.recalc();
+            face3.draw(pApplet, Run.LIGHT_VECTOR, Run.LIGHT_INT);
+        }
 
         pApplet.fill(0);
         pApplet.stroke(0);
